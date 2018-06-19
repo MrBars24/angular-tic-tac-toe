@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+.square{
+	background: #0086b3;
+	border: 1px solid #000080;
+	height: 180px;
+	border-radius:15px;
+	margin-bottom: 2px;
+	margin-right:-25px;
+}
+  
+.square p{
+	text-align:center;
+	font-size:110px;
+	color:white;
+}
