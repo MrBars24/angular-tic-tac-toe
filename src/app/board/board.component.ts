@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Tile } from '../tile';
 declare var $ : any;
 
@@ -32,7 +33,7 @@ export class BoardComponent implements OnInit {
   readonly playerSign = 'X';
   readonly cpuSign = 'O';
 
-  constructor() { }
+  constructor(private router:Router) { }
 
   ngOnInit() {
 
@@ -50,16 +51,23 @@ export class BoardComponent implements OnInit {
   // let CPU attack on Game
   cpuAttack() {
     let index = this.availableAttacks[Math.floor(Math.random()*this.availableAttacks.length)];
-    
-    for(let t of this.tiles) {
-      for(let item of t) {
-        if(item.id == index){
-          item.text = this.cpuSign;
-          this.removeAvailableAttack(index);
-          return;
+    let isCpuWinning = this.checkCpuWinning();
+
+    if(isCpuWinning.isWinning) {
+      this.removeAvailableAttack(isCpuWinning.move.id);
+      isCpuWinning.move.text = this.cpuSign;
+    }else {
+      for(let t of this.tiles) {
+        for(let item of t) {
+          if(item.id == index){
+            item.text = this.cpuSign;
+            this.removeAvailableAttack(index);
+            return;
+          }
         }
       }
     }
+    
   }
 
   // Helper : Remove Available Attacks
@@ -110,7 +118,10 @@ export class BoardComponent implements OnInit {
   // helpers : show modal
   showModal (message) {
     this.message = message;
-    $('#myModal').modal('toggle')
+    $('#myModal').modal({
+      backdrop : 'static',
+      show : true
+    })
   }
 
   // reset board
@@ -133,6 +144,125 @@ export class BoardComponent implements OnInit {
       ]
     ];
     $('#myModal').modal('toggle')
+  }
+
+  checkCpuWinning () {
+    let t = this.tiles;
+
+    if(t[0][0].text == this.cpuSign && t[0][1].text == this.cpuSign && t[0][2].text == "" ||
+      t[0][0].text == this.cpuSign && t[0][2].text == this.cpuSign && t[0][1].text == "" ||
+      t[0][1].text == this.cpuSign && t[0][2].text == this.cpuSign && t[0][0].text == ""){
+
+        return this.predictAttack([
+          t[0][0],
+          t[0][1],
+          t[0][2]
+        ]);
+    }
+
+    if(t[1][0].text == this.cpuSign && t[1][1].text == this.cpuSign && t[1][2].text == "" ||
+      t[1][0].text == this.cpuSign && t[1][2].text == this.cpuSign && t[1][1].text == "" ||
+      t[1][1].text == this.cpuSign && t[1][2].text == this.cpuSign && t[1][0].text == ""){
+
+        return this.predictAttack([
+          t[1][0],
+          t[1][1],
+          t[1][2]
+        ])
+    }
+
+    if(t[2][0].text == this.cpuSign && t[2][1].text == this.cpuSign && t[2][2].text == "" ||
+      t[2][0].text == this.cpuSign && t[2][2].text == this.cpuSign && t[2][1].text == "" ||
+      t[2][1].text == this.cpuSign && t[2][2].text == this.cpuSign && t[2][0].text == "" ){
+
+        return this.predictAttack([
+          t[2][0],
+          t[2][1],
+          t[2][2]
+        ])
+    }
+
+    if(t[0][0].text == this.cpuSign && t[1][0].text == this.cpuSign && t[2][0].text == "" ||
+      t[0][0].text == this.cpuSign && t[2][0].text == this.cpuSign && t[1][0].text == "" ||
+      t[1][0].text == this.cpuSign && t[2][0].text == this.cpuSign && t[0][0].text == ""){
+
+        return this.predictAttack([
+          t[0][0],
+          t[1][0],
+          t[2][0]
+        ])
+    }
+
+    if(t[0][1].text == this.cpuSign && t[1][1].text == this.cpuSign && t[2][1].text == "" ||
+      t[0][1].text == this.cpuSign && t[2][1].text == this.cpuSign && t[1][1].text == "" ||
+      t[1][1].text == this.cpuSign && t[2][1].text == this.cpuSign && t[0][1].text == ""){
+
+        return this.predictAttack([
+          t[0][1],
+          t[1][1],
+          t[2][1]
+        ])
+    }
+
+    if(t[0][2].text == this.cpuSign && t[1][2].text == this.cpuSign && t[2][2].text == ""||
+      t[0][2].text == this.cpuSign && t[2][2].text == this.cpuSign && t[1][2].text == "" ||
+      t[1][2].text == this.cpuSign && t[2][2].text == this.cpuSign && t[0][2].text == ""){
+
+        return this.predictAttack([
+          t[0][2],
+          t[1][2],
+          t[2][2]
+        ])
+    }
+
+    if(t[0][0].text == this.cpuSign && t[1][1].text == this.cpuSign && t[2][2].text == "" ||
+      t[0][0].text == this.cpuSign && t[2][2].text == this.cpuSign && t[1][1].text == "" ||
+      t[1][1].text == this.cpuSign && t[2][2].text == this.cpuSign && t[0][0].text == ""){
+
+        return this.predictAttack([
+          t[0][0],
+          t[1][1],
+          t[2][2]
+        ])
+    }
+
+    if(t[0][2].text == this.cpuSign && t[1][1].text == this.cpuSign && t[2][0].text == "" ||
+      t[1][1].text == this.cpuSign && t[2][0].text == this.cpuSign && t[0][2].text == "" ||
+      t[0][2].text == this.cpuSign && t[2][0].text == this.cpuSign && t[1][1].text == ""){
+
+        return this.predictAttack([
+          t[0][2],
+          t[1][1],
+          t[2][0]
+        ])
+    }
+
+    return {
+      isWinning : false,
+      move : []
+    }
+  }
+
+  predictAttack (moves) {
+    for(let i = 0; i < moves.length ; i++) {
+      if(moves[i].text != "O" && moves[i].text != "X"){
+        return {
+          isWinning : true,
+          move : moves[i]
+        };
+      }
+    }
+
+    return {
+      isWinning : false,
+      move : []
+    }
+  }
+
+  // quit
+  quit () {
+    $('#myModal').modal('toggle')
+    this.router.navigateByUrl('/home');
   }
 
 }
