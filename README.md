@@ -1,4 +1,4 @@
-# T3
+# T3 DEMO
 
 * Make sure install angular CLI ```npm install -g @angular/cli``` if not yet installed
 * run on command line interface ``` npm install ```
