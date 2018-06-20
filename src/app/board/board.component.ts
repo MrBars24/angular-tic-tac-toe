@@ -102,7 +102,9 @@ export class BoardComponent implements OnInit {
       }
 
       // Draw
-      this.showModal("Draw");
+      if(this.availableAttacks.length == 0){
+        this.showModal("Draw");
+      }
   }
 
   // helpers : show modal
